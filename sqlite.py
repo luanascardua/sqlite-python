@@ -1,3 +1,4 @@
+from cores import Cores
 from tqdm import tqdm
 from sheet import *
 import sqlite3
@@ -133,6 +134,7 @@ def insertTipoAvaliacao():
 
     for lines in range(executeWb.firstLine, executeWb.lastLine):
         executeWb.getDataTipoAvaliacao(lines)
+        print(executeWb.sigla, executeWb.descricao)
         try:
             cursor.execute(
                 f"INSERT INTO tipoAvaliacao VALUES('{executeWb.sigla}', '{executeWb.descricao}')"
@@ -152,7 +154,7 @@ def insertAvaliacao():
         executeWb.getDataAvaliacao(lines)
         try:
             cursor.execute(
-                f"INSERT INTO tipoAvaliacao VALUES ('{executeWb.sigla}', '{executeWb.descricao}', \
+                f"INSERT INTO avaliacao VALUES (null, '{executeWb.sigla}', '{executeWb.descricao}', \
                 '{executeWb.dataInicio}', '{executeWb.dataTermino}', '{executeWb.idUser}')"
             )
         except Exception as e:
@@ -209,11 +211,136 @@ def delete(tabela):
         print(e)
 
 
+#listar elementos das tabelas
+def displayTipoUsuario():
+    
+    try:
+        cursor.execute(
+            "SELECT * FROM tipoUsuario"
+            )
+        resultado = cursor.fetchall()
+
+        if resultado:
+            print(f"{Cores.BOLD}{Cores.OKGREEN}")
+            print("{:<5} {:<20}".format("Sigla", "Descrição"))
+            print(f"{Cores.ENDC} ")
+            for item in range(len(resultado)):
+                print("{:<5} {:<20}".format(resultado[item][0], resultado[item][1]))
+                input(f"{Cores.BOLD}{Cores.OKBLUE}\nPressione <ENTER> para continuar ...{Cores.ENDC}")
+        else:
+            print(f"{Cores.BOLD}{Cores.FAIL}Não foram encontrados registros.{Cores.ENDC}")
+    except Exception as e:
+        print(e)
+
+
+def displayUsuario():
+
+    try:
+        cursor.execute(
+            "SELECT * FROM usuario"
+            )
+        resultado = cursor.fetchall()
+
+        if resultado:
+            print(f"{Cores.BOLD}{Cores.OKGREEN}")
+            print("{:<5} {:<30} {:<10} {:<5}".format("ID", "Nome", "Sigla", "Idade"))
+            print(f"{Cores.ENDC} ")
+            for item in range(len(resultado)):
+                print("{:<5} {:<30} {:<10} {:<5}".format(resultado[item][0], resultado[item][1], \
+                    resultado[item][2], resultado[item][3]))
+                input(f"{Cores.BOLD}{Cores.OKBLUE}\nPressione <ENTER> para continuar ...{Cores.ENDC}")
+        else:
+            print(f"{Cores.BOLD}{Cores.FAIL}Não foram encontrados registros.{Cores.ENDC}")
+
+    except Exception as e:
+        print(e)
+    
+
+def displayTipoAvaliacao():
+
+    try:
+        cursor.execute(
+            "SELECT * FROM tipoAvaliacao"
+            )
+        resultado = cursor.fetchall()
+
+        if resultado:
+            print(f"{Cores.BOLD}{Cores.OKGREEN}")
+            print("{:<5} {:<20}".format("Sigla", "Descrição"))
+            print(f"{Cores.ENDC} ")
+            for item in range(len(resultado)):
+                print("{:<5} {:<20}".format(resultado[item][0], resultado[item][1]))
+                #input(f"{Cores.BOLD}{Cores.OKBLUE}\nPressione <ENTER> para continuar ...{Cores.ENDC}")
+        else:
+            print(f"{Cores.BOLD}{Cores.FAIL}Não foram encontrados registros.{Cores.ENDC}")
+
+    except Exception as e:
+        print(e)
+
+
+def displayAvaliacao():
+
+    try:
+        cursor.execute(
+            "SELECT * FROM avaliacao"
+            )
+        resultado = cursor.fetchall()
+        print(resultado)
+        print(len(resultado))
+
+        if resultado:
+            print(f"{Cores.BOLD}{Cores.OKGREEN}")
+            print("{:<10} {:<10} {:<20} {:<30} {:<30} {:<10}".format("ID", "Sigla", "Descrição", "Data início",
+                "data Término", "ID Usuário"))
+            print(f"{Cores.ENDC} ")
+    
+            for item in range(len(resultado)):
+                print("{:<10} {:<10} {:<20} {:<30} {:<30} {:<10}".format(resultado[item][0], resultado[item][1], 
+                resultado[item][2], resultado[item][3], resultado[item][4], resultado[item][5]))
+                #input(f"{Cores.BOLD}{Cores.OKBLUE}\nPressione <ENTER> para continuar ...{Cores.ENDC}")
+        else:
+            print(f"{Cores.BOLD}{Cores.FAIL}Não foram encontrados registros.{Cores.ENDC}")
+
+    except Exception as e:
+        print(e)
+
+
+def query():
+
+    '''#Por periodo
+    periodoInicio   = input('Data início: ')
+    periodoTermino  = input('Data término: ')
+
+    try:
+        cursor.execute(
+           f"SELECT * FROM avaliacao WHERE dataInicio >= '{periodoInicio}' \
+            AND dataTermino <= '{periodoTermino}'"
+        )
+        resultado = cursor.fetchall()
+        print(resultado)
+    except Exception as e:
+        print(e)'''
+
+    #Por professor
+    professor = input('Professor: ')
+   
+    try:
+        cursor.execute(
+            f"SELECT nome FROM usuario INNER JOIN avaliacao ON avaliacao.idUser = usuario.idUser WHERE nome = '{professor}'"
+        )
+        resultado = cursor.fetchall()
+        print(resultado)
+    except Exception as e:
+        print(e)
+    
+
 
 global functions
 functions = locals()
 
 createDb('avaliacao.db')
 connect()
-insertUsuario()
-delete('usuario')
+table()
+
+#insertUsuario()
+#delete('usuario')

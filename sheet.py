@@ -4,7 +4,7 @@ from openpyxl import load_workbook
 class Sheet():
 
 
-    def __init__(self, wb = 'teste.xlsx'):
+    def __init__(self, wb = 'insertData.xlsx'):
 
         global sheets
         #self.firstLine = int
@@ -22,7 +22,7 @@ class Sheet():
 
         self.lastLine = len(ws['B']) + 1
         data =  [
-            x.value for x in ws['E']
+            x.value for x in ws['F']
             if x.value != None
         ]      
         self.firstLine = len(data) + 1
@@ -48,7 +48,7 @@ class Sheet():
         self.descricao   = ws.cell(row=lines, column=2).value
         self.dataInicio  = ws.cell(row=lines, column=3).value
         self.dataTermino = ws.cell(row=lines, column=4).value
-        self.idUser      = ws.cell(row=lines, column=3).value
+        self.idUser      = ws.cell(row=lines, column=5).value
 
 
     def getDataAvaliacaoAluno(self, lines):

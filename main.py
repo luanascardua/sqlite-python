@@ -12,7 +12,7 @@ functions[function]()'''
 
 
 
-while True:
+'''while True:
     returnMenu = menu()
     clean()
     
@@ -37,32 +37,28 @@ while True:
 
     ################ MENU PROFESSOR ################
     elif returnMenu == 2:
-
-        while True:
-            try:
-                returnfunctionessor = menuProfessor()
-                
-                if returnfunctionessor   == 0:
-                    print('voltar')
-                elif returnfunctionessor == 1:
-                    function = 'display'
-                elif returnfunctionessor == 2:
-                    function = 'insert'
-                elif returnfunctionessor == 3:
-                    function = 'update'
-                    tabela = input('Tabela: ')
-                    update(tabela)
-                    continue
-                elif returnfunctionessor == 4:
-                    function = 'delete'
-                elif returnfunctionessor == 5:
-                    function = 'search'
-                else:
-                    raise ValueError('Opção inválida')
-                break
-            except ValueError as e:
-                print(e)
-
+        returnfunctionessor = menuProfessor()
+       
+        while returnfunctionessor != 0:
+            if returnfunctionessor == 1:
+                function = 'display'
+            elif returnfunctionessor == 2:
+                function = 'insert'
+            elif returnfunctionessor == 3:
+                function = 'update'
+                tabela = input('Tabela: ')
+                update(tabela)
+                continue
+            elif returnfunctionessor == 4:
+                function = 'delete'
+            elif returnfunctionessor == 5:
+                function = 'search'
+            else:
+                raise ValueError('Opção inválida')
+            returnfunctionessor = menuProfessor()
+            #except ValueError as e:
+                #print(e)
+        returnMenu = menu()
         while True:
             try:
                 returnMenuCrud = submenuCrud()
@@ -96,11 +92,42 @@ while True:
     else:
         print('opção Inválida')
     break
-
-
 '''
-executeDb.createDb()
-executeDb.connect()
-executeDb.table()
-executeDb.insertTipoUsuario()
-executeDb.insertUsuario()'''
+
+
+if __name__ == '__main__':
+
+    opcao = menu()
+
+    while opcao != 3:
+    
+        if opcao == 1:
+            print('ESTUDANTE')
+        elif opcao == 2:
+            print('PROFESSOR')
+            opcaosub = menuProfessor()
+            clean()
+            while opcaosub != 0:
+                if opcaosub == 1:
+                    print(f'Exibir')
+                    function = 'display'
+                elif opcaosub == 2:
+                    print(f'Inserir')
+                    function = 'insert'
+                elif opcaosub == 3:
+                    print(f'update')
+                    function = 'Atualizar'
+                elif opcaosub == 4:
+                    print(f'Excluir')
+                    function = 'delete'
+                elif opcaosub == 5:
+                    print(f'Pesquisar')
+                    function = 'search'
+                else:
+                    print('Opção inválida!')
+                opcaosub = menuProfessor()
+                clean()
+            opcao = menu()
+            clean()
+else:
+    print("Volte sempre!")
