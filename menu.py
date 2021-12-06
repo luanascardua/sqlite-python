@@ -26,11 +26,24 @@ def menuEstudante():
     return opcaoMenu
 
 
+def submenuPesquisaEstudante():
+
+    print(f"{Cores.BOLD}{Cores.OKBLUE}\n** Selecione um item de pesquisa **{Cores.ENDC}")
+    print(f"{Cores.BOLD}{Cores.FAIL}\n0. Retornar ao menu anterior{Cores.ENDC}")
+    print(f"{Cores.BOLD}1. Exibir alunos APROVADOS")
+    print(f"{Cores.BOLD}2. Exibir alunos REPROVADOS")
+    print(f"{Cores.BOLD}3. Pesquisar entre notas{Cores.ENDC}")
+
+
+    opcaoMenu = int(input('\nSelecione uma opção: '))
+    return opcaoMenu
+
+
 def menuProfessor():
 
-    print(23 * '=')
-    print(f"{Cores.BOLD}{Cores.OKBLUE}*** OPÇÃO PROFESSOR ***{Cores.ENDC}")
-    print(23 * '=')
+    print(40 * '=')
+    print(f"{Cores.BOLD}{Cores.OKBLUE}\t*** OPÇÃO PROFESSOR ***{Cores.ENDC}")
+    print(40 * '=')
     print(f"{Cores.BOLD}{Cores.FAIL}\n0. Retornar ao menu principal{Cores.ENDC}")
     print(f"{Cores.BOLD}1. Exibir dados")
     print(f"{Cores.BOLD}2. Inserir dados")
@@ -44,7 +57,7 @@ def menuProfessor():
 
 def submenuCrud():
     
-        print(f"{Cores.BOLD}{Cores.OKBLUE}\n*** Selecione um item para modificar os dados ***{Cores.ENDC}")
+        print(f"{Cores.BOLD}{Cores.OKBLUE}\n*** Selecione um item p/ manipulação de dados ***{Cores.ENDC}")
         print(f"{Cores.BOLD}{Cores.FAIL}\n0. Retornar ao menu principal{Cores.ENDC}")
         print(f"{Cores.BOLD}1. Tipo Usuário")
         print(f"{Cores.BOLD}2. Usuário")
@@ -64,7 +77,10 @@ def submenuPesquisar():
     print(f"{Cores.BOLD}2. Avaliações por professor")
     print(f"{Cores.BOLD}3. Avaliações por tipo")
     print(f"{Cores.BOLD}4. Alunos sem avaliações atribuídas")
-    print(f"{Cores.BOLD}5. Alunos por situação{Cores.ENDC}")
+    print(f"{Cores.BOLD}5. Alunos Reprovados")
+    print(f"{Cores.BOLD}6. Alunos Aprovados")
+    print(f"{Cores.BOLD}7. Pesquisar por notas")
+    print(f"{Cores.BOLD}8. Pesquisar por item{Cores.ENDC}")
 
     opcaoMenu = int(input('\nSelecione uma opção: '))
     return opcaoMenu

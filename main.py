@@ -1,6 +1,6 @@
 from sqlite import *
-from menu import *
 from sheet import *
+from menu import *
 
 #print(f'Funções: {functions}')
 '''funcao = 'getData'
@@ -8,92 +8,12 @@ functions[funcao]()'''
 
 '''function = 'insertUsuario'
 functions[function]()'''
-
-
-
-
-'''while True:
-    returnMenu = menu()
-    clean()
-    
-    if returnMenu == 3:
-        os._exit(1)
-
-    ################ MENU ESTUDANTE ################
-    elif returnMenu == 1:
-        while True:
-            try:
-                returnMenuEstudante = menuEstudante()
-                if returnMenuEstudante == 1:
-                    print('consultar Boletim')
-                elif returnMenuEstudante == 0:
-                    print('retornar menu principal')
-                else:
-                    raise ValueError('Opção inválida')
-                break
-            except ValueError as e:
-                print(e)
-
-
-    ################ MENU PROFESSOR ################
-    elif returnMenu == 2:
-        returnfunctionessor = menuProfessor()
-       
-        while returnfunctionessor != 0:
-            if returnfunctionessor == 1:
-                function = 'display'
-            elif returnfunctionessor == 2:
-                function = 'insert'
-            elif returnfunctionessor == 3:
-                function = 'update'
-                tabela = input('Tabela: ')
-                update(tabela)
-                continue
-            elif returnfunctionessor == 4:
-                function = 'delete'
-            elif returnfunctionessor == 5:
-                function = 'search'
-            else:
-                raise ValueError('Opção inválida')
-            returnfunctionessor = menuProfessor()
-            #except ValueError as e:
-                #print(e)
-        returnMenu = menu()
-        while True:
-            try:
-                returnMenuCrud = submenuCrud()
-
-                if returnMenuCrud   == 1:
-                    #table tipoUsuario
-                    functions[function + 'TipoUsuario']()
-
-                elif returnMenuCrud == 2:
-                    #table usuario
-                    
-                    functions[function + 'Usuario']()
-
-                elif returnMenuCrud == 3:
-                    #table tipoAvaliacao
-                    functions[function + 'TipoAvaliacao']()
-
-                elif returnMenuCrud == 4:
-                    #table avaliacao
-                    functions[function + 'Avaliacao']()
-
-                elif returnMenuCrud == 5:
-                    #table avaliacaoAluno
-                    functions[function + 'AvaliacaoAluno']()
-                else:
-                    raise ValueError('Opção inválida')
-                break
-            except ValueError as e:
-                print(e)
+            
+'''raise ValueError('Opção inválida')
+break
+except ValueError as e:
+print(e)'''
         
-    else:
-        print('opção Inválida')
-    break
-'''
-
 
 if __name__ == '__main__':
 
@@ -102,31 +22,107 @@ if __name__ == '__main__':
     while opcao != 3:
     
         if opcao == 1:
-            print('ESTUDANTE')
+            clean()
+
+            returnMenuEstudante = menuEstudante()
+            while returnMenuEstudante != 0:
+                if returnMenuEstudante == 1:
+                    clean(); boletim()
+                    input(f"{Cores.BOLD}{Cores.OKBLUE}\nPressione <ENTER> para voltar ao menu principal ...{Cores.ENDC}")
+                    break
+            clean()
+            opcao = menu()
+
         elif opcao == 2:
-            print('PROFESSOR')
+            clean()
             opcaosub = menuProfessor()
             clean()
+
             while opcaosub != 0:
                 if opcaosub == 1:
-                    print(f'Exibir')
                     function = 'display'
                 elif opcaosub == 2:
-                    print(f'Inserir')
                     function = 'insert'
                 elif opcaosub == 3:
                     print(f'update')
-                    function = 'Atualizar'
+                    function = 'Update'
                 elif opcaosub == 4:
                     print(f'Excluir')
-                    function = 'delete'
+                    function = 'Delete'
                 elif opcaosub == 5:
                     print(f'Pesquisar')
-                    function = 'search'
+                    function = 'query'
+                    returnMenuPesquisar = submenuPesquisar()
+
+                    while returnMenuPesquisar != 0:
+                        if returnMenuPesquisar == 1:
+                            pesquisa = 'AvaliacaoPeriodo'
+                        elif returnMenuPesquisar == 2:
+                            pesquisa = 'AvaliacaoProfessor'
+                        elif returnMenuPesquisar == 3:
+                            pesquisa = 'AvaliacaoTipo'
+                        elif returnMenuPesquisar == 4:
+                            pesquisa = 'AlunosSemAvaliacao'
+                        elif returnMenuPesquisar == 5:
+                            pesquisa = 'AlunosReprovados'
+                        elif returnMenuPesquisar == 6:
+                            pesquisa = 'AlunosAprovados'
+                        elif returnMenuPesquisar == 7:
+                            pesquisa = 'PesquisarNotas'
+                        elif returnMenuPesquisar == 8:
+                            print('Pesquisar por item')
+                            search()
+                            input(f"{Cores.BOLD}{Cores.OKBLUE}\nPressione <ENTER> para voltar ao menu principal ...{Cores.ENDC}")
+                            break
+        
+                        functions[function + pesquisa]()
+                        input(f"{Cores.BOLD}{Cores.OKBLUE}\nPressione <ENTER> para voltar ao menu principal ...{Cores.ENDC}")
+                        break
+                    clean()
+                    opcao = menu()
+                    #continue
                 else:
                     print('Opção inválida!')
+
+                returnMenuCrud = submenuCrud()
+
+                while returnMenuCrud != 0:                     
+                    if returnMenuCrud   == 1:
+                        #table tipoUsuario
+                        tabela = 'TipoUsuario'
+                    elif returnMenuCrud == 2:
+                        #table usuario
+                        tabela = 'Usuario'
+                    elif returnMenuCrud == 3:
+                        #table tipoAvaliacao
+                        tabela = 'TipoAvaliacao'
+                    elif returnMenuCrud == 4:
+                        #table avaliacao
+                        tabela = 'Avaliacao'
+                    elif returnMenuCrud == 5:
+                        #table avaliacaoAluno
+                        tabela = 'AvaliacaoAluno'
+                    else:
+                        print('Opção inválida')
+
+
+                    if function != 'Update' and function != 'Delete':
+                        functions[function + tabela]()
+
+                    elif function == 'Update':
+                        update(tabela)
+                        
+                    elif function == 'Delete':
+                        delete(tabela)
+
+                    print(f'Voltando ao menu principal em 5s...{Cores.ENDC}')
+                    time.sleep(5)
+                    break
+
+                clean()
                 opcaosub = menuProfessor()
                 clean()
+
             opcao = menu()
             clean()
 else:
