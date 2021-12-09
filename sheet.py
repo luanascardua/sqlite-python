@@ -1,32 +1,37 @@
 from openpyxl import load_workbook
-import time
+from datetime import datetime
+
 
 class Sheet():
 
 
-    def __init__(self, wb = 'insertData.xlsx'):
+    def __init__(self, file = 'insertData.xlsx'):
 
         global sheets
-        #self.firstLine = int
-        self.wb = load_workbook(wb)
+        
+        self.wb = load_workbook(file)
+        self.file = file
+
+        #armazena o nome de todas as sheets da pasta de trabalho do excel
         sheets = self.wb.sheetnames
     
-        print(f'Sheet: {sheets}')
 
 
     def countLines(self, sheet):
 
         global ws
-
+    
         ws = self.wb[sheet]
 
+        #armazena a última linha correspondente a coluna B
         self.lastLine = len(ws['B']) + 1
+
         data =  [
             x.value for x in ws['I']
             if x.value != None
         ]      
+        #armazena a primeira linha vazia correspondente a coluna I
         self.firstLine = len(data) + 1
-        print(f'1 linha: {self.firstLine}\núltima: {self.lastLine}')
 
 
     def getDataUser(self, lines):
@@ -62,13 +67,19 @@ class Sheet():
         self.situacao       = ws.cell(row=lines, column=5).value
 
 
+    def insertData(self, lines):
+
+        if ws.cell(row=lines, column=9).value == None:
+            ws.cell(row=lines, column=9).value = 'Inserido'
+        
+        if ws.cell(row=1, column=10).value == None:
+            ws.cell(row=1, column=10).value = 'Horário'
+        
+        if ws.cell(row=lines, column=10).value == None:
+            ws.cell(row=lines, column=10).value = datetime.now().strftime('%H:%M:%S %d/%m/%y')
+
+        self.wb.save(self.file)
+
 
 executeWb = Sheet()
-executeWb.countLines(sheets[0])
-
-
-#for lines in (firstLine, lastLine):
-'''functions = locals()
-print(f'Funções: {functions}')
-funcao = 'getData'
-functions[funcao]()'''
+#executeWb.countLines(sheets[0])

@@ -18,7 +18,7 @@ def createDb(database):
 
     try:
         connection = sqlite3.connect(database)
-    except Exception as e:
+    except sqlite3.Error as e:
         print(e)
 
 
@@ -71,8 +71,8 @@ def table():
                 siglaAvaliacao TEXT NOT NULL,
                 descricao TEXT NOT NULL,
 		        tipoAvaliacao TEXT NOT NULL,
-                dataInicio DATE NOT NULL,
-                dataTermino DATE NOT NULL,
+                dataInicio DATE ONLY NOT NULL,
+                dataTermino DATE ONLY NOT NULL,
 		        notaAprovacao FLOAT NOT NULL,
                 idUser INTEGER,
                 FOREIGN KEY (idUser) REFERENCES usuario (idUser),
@@ -87,13 +87,12 @@ def table():
                 idAvaliacao TEXT NOT NULL,
                 dataConclusao DATE,
                 notaAtribuida REAL NOT NULL,
-                situacao TEXT NOT NULL,
                 FOREIGN KEY (idUser) REFERENCES usuario (idUser),
                 FOREIGN KEY (idAvaliacao) REFERENCES avaliacao (idAvaliacao)
                 );
         """);
 
-    except Exception as e:
+    except sqlite3.Error as e:
         print(e)
 
     
@@ -109,7 +108,7 @@ def insertTipoUsuario():
         cursor.executemany(
             "INSERT INTO tipoUsuario VALUES (?,?);", tipoUsuario
         )
-        print('\nDados inseridos com sucesso!\n')
+        print(f'{Cores.OKGREEN}\nDados inseridos com sucesso.')
     except Error as e:
         print(e)
 
@@ -119,17 +118,20 @@ def insertTipoUsuario():
 def insertUsuario():
 
     executeWb.countLines(sheets[0])
-  
+    
     for lines in tqdm(range(executeWb.firstLine, executeWb.lastLine)):
         executeWb.getDataUser(lines)
         try:
             cursor.execute(
                 f"INSERT INTO usuario VALUES(null, '{executeWb.name}', '{executeWb.sigla}', '{executeWb.idade}')"
             )
+
+            commit()
         except Exception as e:
             print(e)
 
-        commit()
+        executeWb.insertData(lines)
+        
     print(f'{Cores.OKGREEN}\nDados inseridos com sucesso.')
     
 
@@ -137,27 +139,28 @@ def insertTipoAvaliacao():
 
     executeWb.countLines(sheets[1])
 
-    for lines in range(executeWb.firstLine, executeWb.lastLine):
+    for lines in tqdm(range(executeWb.firstLine, executeWb.lastLine)):
         executeWb.getDataTipoAvaliacao(lines)
-        print(executeWb.sigla, executeWb.descricao)
+        
         try:
             cursor.execute(
                 f"INSERT INTO tipoAvaliacao VALUES('{executeWb.sigla}', '{executeWb.descricao}')"
             )
-            print(executeWb.sigla, executeWb.descricao)
         except Exception as e:
             print(e)
        
         commit()
+        executeWb.insertData(lines)
+
+    print(f'{Cores.OKGREEN}\nDados inseridos com sucesso.')
 
 
 def insertAvaliacao():
 
     executeWb.countLines(sheets[2])
 
-    for lines in range(executeWb.firstLine, executeWb.lastLine):
+    for lines in tqdm(range(executeWb.firstLine, executeWb.lastLine)):
         executeWb.getDataAvaliacao(lines)
-        #print(f"{executeWb.sigla}', '{executeWb.descricao}', '{executeWb.dataInicio}', '{executeWb.dataTermino}', '{executeWb.idUser}")
 
         try:
             cursor.execute(
@@ -169,6 +172,9 @@ def insertAvaliacao():
             print(e)
         
         commit()
+        executeWb.insertData(lines)
+
+    print(f'{Cores.OKGREEN}\nDados inseridos com sucesso.')
 
 
 def insertAvaliacaoAluno():
@@ -177,16 +183,18 @@ def insertAvaliacaoAluno():
 
     for lines in tqdm(range(executeWb.firstLine, executeWb.lastLine)):
         executeWb.getDataAvaliacaoAluno(lines)
-        #print(f'{executeWb.idUser}, {executeWb.idAvaliacao}, {executeWb.dataConclusao}, {executeWb.nota}, {executeWb.situacao}')
+        
         try:
             cursor.execute(
                 f"INSERT INTO avaliacaoAluno VALUES('{executeWb.idUser}', '{executeWb.idAvaliacao}', \
-                '{executeWb.dataConclusao}', '{executeWb.nota}', '{executeWb.situacao}')"
+                '{executeWb.dataConclusao}', '{executeWb.nota}')"
             )
         except Exception as e:
             print(e)
 
         commit()
+        executeWb.insertData(lines)
+
     print(f'{Cores.OKGREEN}\nDados inseridos com sucesso.')
 
 
@@ -215,16 +223,12 @@ def delete(tabela):
 
     campo = input('CAMPO DE REFERÊNCIA: ')
     value = input('VALUE: ')
-    values = (value,)
-
+    
     try:
         cursor.execute(
-            f"DELETE FROM {tabela} WHERE '{campo}'=?;",values
-        )
+            f"DELETE FROM {tabela.lower()} WHERE {campo} = '{value}'"        )
         commit()
         print(f'{Cores.OKGREEN}\nCampo excluído com sucesso.')
-        print(f'Voltando ao menu principal em 5s...{Cores.ENDC}')
-        time.sleep(5)
     except Exception as e:
         print(e)
 
@@ -239,14 +243,13 @@ def displayTipoUsuario():
         resultado = cursor.fetchall()
 
         if resultado:
-            print(f"{Cores.BOLD}{Cores.OKGREEN}")
-            print("{:<5} {:<20}".format("Sigla", "Descrição"))
-            print(f"{Cores.ENDC} ")
+            print(f'{Cores.BOLD}{Cores.OKGREEN}')
+            print('{:<10} {:<20}'.format('Sigla', 'Descrição'))
+            print(25 * '_'); print(f'{Cores.ENDC}')
             for item in range(len(resultado)):
-                print("{:<5} {:<20}".format(resultado[item][0], resultado[item][1]))
-                input(f"{Cores.BOLD}{Cores.OKBLUE}\nPressione <ENTER> para continuar ...{Cores.ENDC}")
+                print("{:<10} {:<20}".format(resultado[item][0], resultado[item][1]))
         else:
-            print(f"{Cores.BOLD}{Cores.FAIL}Não foram encontrados registros.{Cores.ENDC}")
+            print(f'{Cores.BOLD}{Cores.FAIL}Não foram encontrados registros.{Cores.ENDC}')
     except Exception as e:
         print(e)
 
@@ -260,17 +263,15 @@ def displayUsuario():
         resultado = cursor.fetchall()
 
         if resultado:
-            print(f"{Cores.BOLD}{Cores.OKGREEN}")
-            print("{:<10} {:<30} {:<10} {:<5}".format("ID", "NOME", "SIGLA ", "IDADE"))
-            print(60 * '_'); print(f"{Cores.ENDC}")
+            print(f'{Cores.BOLD}{Cores.OKGREEN}')
+            print('{:<10} {:<30} {:<10} {:<5}'.format('ID', 'NOME', 'SIGLA', 'IDADE'))
+            print(60 * '_'); print(f'{Cores.ENDC}')
 
             for item in range(len(resultado)):
-                print("{:<10} {:<30} {:<10} {:<5}".format(resultado[item][0], resultado[item][1], \
-                    resultado[item][2], resultado[item][3]))
-
-            input(f"{Cores.BOLD}{Cores.OKBLUE}\nPressione <ENTER> para voltar ao menu ...{Cores.ENDC}")
+                print("{:<10} {:<30} {:<10} {:<5}".format(resultado[item][0], resultado[item][1],
+                resultado[item][2], resultado[item][3]))
         else:
-            print(f"{Cores.BOLD}{Cores.FAIL}Não foram encontrados registros.{Cores.ENDC}")
+            print(f'{Cores.BOLD}{Cores.FAIL}Não foram encontrados registros.{Cores.ENDC}')
     except Exception as e:
         print(e)
     
@@ -285,11 +286,10 @@ def displayTipoAvaliacao():
 
         if resultado:
             print(f"{Cores.BOLD}{Cores.OKGREEN}")
-            print("{:<5} {:<20}".format("Sigla", "Descrição"))
-            print(f"{Cores.ENDC} ")
+            print("{:<10} {:<20}".format("Sigla", "Descrição"))
+            print(25 * '_'); print(f"{Cores.ENDC} ")
             for item in range(len(resultado)):
-                print("{:<5} {:<20}".format(resultado[item][0], resultado[item][1]))
-                #input(f"{Cores.BOLD}{Cores.OKBLUE}\nPressione <ENTER> para continuar ...{Cores.ENDC}")
+                print("{:<10} {:<20}".format(resultado[item][0], resultado[item][1]))
         else:
             print(f"{Cores.BOLD}{Cores.FAIL}Não foram encontrados registros.{Cores.ENDC}")
 
@@ -300,22 +300,47 @@ def displayTipoAvaliacao():
 def displayAvaliacao():
 
     try:
-        cursor.execute(
-            "SELECT * FROM avaliacao"
-            )
-        resultado = cursor.fetchall()
-        print(resultado)
+        cursor.execute("""
+            SELECT idAvaliacao, siglaAvaliacao, descricao, tipoAvaliacao, date(dataInicio), date(dataTermino), notaAprovacao, idUser 
+            FROM avaliacao
+        """)
 
+        resultado = cursor.fetchall()
+    
         if resultado:
             print(f"{Cores.BOLD}{Cores.OKGREEN}")
-            print("{:<10} {:<10} {:<20} {:<30} {:<30} {:<10}".format("ID", "Sigla", "Descrição", "Tipo", "Data Início",
-                "Data Término", "Nota Aprovação", "ID Usuário"))
-            print(f"{Cores.ENDC} ")
-    
+            print("{:<5} {:<10} {:<30} {:<10} {:<15} {:<15} {:<10} {:<10}".format("ID", "SIGLA", "DESCRIÇÃO", "TIPO", "DATA INÍCIO",
+                "DATA TÉRMINO", "NOTA", "ID USER"))
+            print(110 * '_'); print(f"{Cores.ENDC} ")
+
             for item in range(len(resultado)):
-                print("{:<10} {:<10} {:<20} {:<10} {:<30} {:<30} {:<10} {:<10}".format(resultado[item][0], resultado[item][1], 
+                print('{:<5} {:<10} {:<30} {:<10} {:<15} {:<15} {:<10} {:<10}'.format(resultado[item][0], resultado[item][1], 
                 resultado[item][2], resultado[item][3], resultado[item][4], resultado[item][5], resultado[item][6], resultado[item][7]))
-                #input(f"{Cores.BOLD}{Cores.OKBLUE}\nPressione <ENTER> para continuar ...{Cores.ENDC}")
+        else:
+            print(f"{Cores.BOLD}{Cores.FAIL}Não foram encontrados registros.{Cores.ENDC}")
+
+    except Exception as e:
+        print(e)
+
+
+def displayAvaliacaoAluno():
+
+    try:
+        cursor.execute("""
+            SELECT idUser, idAvaliacao, date(dataConclusao), notaAtribuida
+            FROM avaliacaoAluno
+        """)
+
+        resultado = cursor.fetchall()
+    
+        if resultado:
+            print(f"{Cores.BOLD}{Cores.OKGREEN}")
+            print("{:<10} {:<10} {:<15} {:<10}".format("ID User", "ID Aval", "DATA conclusão", "NOTA"))
+            print(45 * '_'); print(f"{Cores.ENDC} ")
+
+            for item in range(len(resultado)):
+                print('{:<10} {:<10} {:<15} {:<10}'.format(resultado[item][0], resultado[item][1], 
+                resultado[item][2], resultado[item][3]))
         else:
             print(f"{Cores.BOLD}{Cores.FAIL}Não foram encontrados registros.{Cores.ENDC}")
 
@@ -332,19 +357,21 @@ def queryAvaliacaoPeriodo():
 
     try:
         cursor.execute(
-           f"SELECT * FROM avaliacao WHERE dataInicio >= '{periodoInicio}' \
-            AND dataTermino <= '{periodoTermino}'"
-        )
+           f"""SELECT idAvaliacao, siglaAvaliacao, descricao, date(dataInicio), date(dataTermino), notaAprovacao, idUser 
+            FROM avaliacao WHERE dataInicio >= '{periodoInicio}' AND dataTermino <= '{periodoTermino}'
+        """)
+
         resultado = cursor.fetchall()
+      
         if resultado:
             print(f"{Cores.BOLD}{Cores.OKGREEN}")
-            print("{:<10} {:<10} {:<30} {:10} {:<30} {:<30} {:<10} {:<10}".format("ID", "Sigla", "Descrição", "Tipo", "Data Início",
-                "Data Término", "Nota Aprovação", "ID Usuário"))
-            print(f"{Cores.ENDC} ")
+            print("{:<10} {:<10} {:<30} {:15} {:<15} {:<10} {:<10}".format("ID", "SIGLA", "DESCRIÇÃO", "DATA Início",
+                "DATA Término", "NOTA", "ID User"))
+            print(110 * '_'); print(f"{Cores.ENDC} ")
     
             for item in range(len(resultado)):
-                print("{:<10} {:<10} {:<30} {:10} {:<30} {:<30} {:<10} {:<10}".format(resultado[item][0], resultado[item][1], 
-                resultado[item][2], resultado[item][3], resultado[item][4], resultado[item][5], resultado[item][6], resultado[item][7]))
+                print("{:<10} {:<10} {:<30} {:15} {:<15} {:<10} {:<10}".format(resultado[item][0], resultado[item][1], 
+                resultado[item][2], resultado[item][3], resultado[item][4], resultado[item][5], resultado[item][6],))
         else:
             print(f"{Cores.BOLD}{Cores.FAIL}Não foram encontrados registros.{Cores.ENDC}")
         
@@ -359,21 +386,21 @@ def queryAvaliacaoProfessor():
    
     try:
         cursor.execute(
-            f"SELECT A.idAvaliacao, A.siglaAvaliacao, A.descricao, A.dataInicio, A.dataTermino, U.nome \
-            FROM avaliacao AS A INNER JOIN usuario AS U ON A.idUser = U.idUser \
-            WHERE u.nome LIKE '%{professor}%' AND u.siglaUsuario = 'PROF';"
-        )
+            f"""SELECT A.idAvaliacao, A.siglaAvaliacao, A.descricao, date(A.dataInicio), date(A.dataTermino), U.nome
+            FROM avaliacao AS A INNER JOIN usuario AS U ON A.idUser = U.idUser
+            WHERE u.nome LIKE '%{professor}%' AND u.siglaUsuario = 'PROF';
+        """)
 
         resultado = cursor.fetchall()
 
         if resultado:
             print(f"{Cores.BOLD}{Cores.OKGREEN}")
-            print("{:<10} {:<10} {:<20} {:<25} {:<25} {:<20}".format("ID", "Sigla", "Descrição", "Data Início",
-            "Data Término", "Professor"))
-            print(f'{Cores.ENDC}')
+            print("{:<10} {:<10} {:<20} {:<15} {:<15} {:<20}".format("ID", "SIGLA", "DESCRIÇÃO", "DATA Início",
+            "DATA Término", "PROFESSOR"))
+            print(90 * '_'); print(f"{Cores.ENDC} ")
         
             for item in range(len(resultado)):
-                print("{:<10} {:<10} {:<20} {:<25} {:<25} {:<20}".format(resultado[item][0], resultado[item][1], resultado[item][2], resultado[item][3], 
+                print("{:<10} {:<10} {:<20} {:<15} {:<15} {:<20}".format(resultado[item][0], resultado[item][1], resultado[item][2], resultado[item][3], 
                 resultado[item][4], resultado[item][5]))       
         else:
             print(f"{Cores.BOLD}{Cores.FAIL}Não foram encontrados registros.{Cores.ENDC}")
@@ -383,27 +410,27 @@ def queryAvaliacaoProfessor():
 
 def queryAvaliacaoTipo():
 
-    tipo = input('Tipo: ')
+    tipo = input('\nTipo: ')
 
     try:
         cursor.execute(
-            f"SELECT * FROM avaliacao WHERE tipoAvaliacao = '{tipo}'"
-        )
+            f"""SELECT idAvaliacao, siglaAvaliacao, descricao, tipoAvaliacao, date(dataInicio), date(dataTermino), notaAprovacao
+            FROM avaliacao WHERE tipoAvaliacao = '{tipo.upper()}'
+        """)
 
         resultado = cursor.fetchall()
-        print(resultado)
-        print(len(resultado))
+      
         if resultado:
             print(f"{Cores.BOLD}{Cores.OKGREEN}")
-            print("{:<10} {:<10} {:<20} {:<10} {:<20} {:<20} {:<10} {:<10}".format("ID", "Sigla", "Descrição", "Tipo",
-            "Data Início", "Data Término", "Nota Aprovação", "ID User"))
-            print(f'{Cores.ENDC}')
+            print("{:<10} {:<10} {:<20} {:<10} {:<15} {:<15} {:<10}".format("ID", "SIGLA", "DESCRIÇÃO", "TIPO",
+            "DATA Início", "DATA Término", "NOTA Aprovação"))
+            print(100 * '_'); print(f"{Cores.ENDC} ")
         
             for item in range(len(resultado)):
-                print("{:<10} {:<10} {:<20} {:<10} {:<20} {:<20} {:<10} {:<10}".format(resultado[item][0], resultado[item][1], 
-                resultado[item][2], resultado[item][3], resultado[item][4], resultado[item][5], resultado[item][6], resultado[item][7]))
-            else:
-                print(f"{Cores.BOLD}{Cores.FAIL}Não foram encontrados registros.{Cores.ENDC}")
+                print("{:<10} {:<10} {:<20} {:<10} {:<15} {:<15} {:<10}".format(resultado[item][0], resultado[item][1], 
+                resultado[item][2], resultado[item][3], resultado[item][4], resultado[item][5], resultado[item][6]))
+        else:
+            print(f"{Cores.BOLD}{Cores.FAIL}Não foram encontrados registros.{Cores.ENDC}")
     except Exception as e:
         print(e)
 
@@ -420,14 +447,24 @@ def queryAlunosSemAvaliacao():
         """)
 
         resultado = cursor.fetchall()
-        print(resultado)
+       
+        if resultado:
+            print(f"{Cores.BOLD}{Cores.OKGREEN}")
+            print("{:<10} {:<20} {:<10}".format("ID", "NOME", "SIGLA"))
+            print(30 * '_'); print(f"{Cores.ENDC} ")
+    
+            for item in range(len(resultado)):
+                print("{:<10} {:<20} {:<10}".format(resultado[item][0], resultado[item][1], resultado[item][2]))
+        else:
+            print(f"{Cores.BOLD}{Cores.FAIL}Não foram encontrados registros.{Cores.ENDC}")
+
     except Exception as e:
         print(e)
 
 
 def queryAlunosReprovados():
 
-    #alunos reprovados
+    #lista alunos reprovados
     try:
         cursor.execute("""
             SELECT U.nome, A.siglaAvaliacao, AA.notaAtribuida
@@ -439,35 +476,56 @@ def queryAlunosReprovados():
         """)
 
         resultado = cursor.fetchall()
-        print(resultado)
+
+        if resultado:
+            print(f"{Cores.BOLD}{Cores.OKGREEN}")
+            print("{:<20} {:<10} {:<10}".format("ESTUDANTE", "SIGLA", "NOTA"))
+            print(40 * '_'); print(f"{Cores.ENDC} ")
+    
+            for item in range(len(resultado)):
+                print("{:<20} {:<10} {:<10}".format(resultado[item][0], resultado[item][1], resultado[item][2]))
+        else:
+            print(f"{Cores.BOLD}{Cores.FAIL}Não foram encontrados registros.{Cores.ENDC}")
+
     except Exception as e:
         print(e)
 
 
 def queryAlunosAprovados():
 
-    #alunos aprovados
+    #lista alunos aprovados
     try:
         cursor.execute("""
-            "SELECT U.nome, A.siglaAvaliacao, AA.notaAtribuida
-            from usuario as U LEFT JOIN avaliacaoAluno as AA
-            on U.idUser = AA.idUser
+            SELECT U.nome, A.siglaAvaliacao, AA.notaAtribuida
+            FROM usuario as U LEFT JOIN avaliacaoAluno as AA
+            ON U.idUser = AA.idUser
             LEFT JOIN avaliacao as A
-            on AA.idAvaliacao = A.idAvaliacao
-            WHERE U.siglaUsuario = 'ESTD' and AA.notaAtribuida >= A.notaAprovacao;"
+            ON AA.idAvaliacao = A.idAvaliacao
+            WHERE U.siglaUsuario = 'ESTD' and AA.notaAtribuida >= A.notaAprovacao;
         """)
+
         resultado = cursor.fetchall()
-        print(resultado)
+
+        if resultado:
+            print(f"{Cores.BOLD}{Cores.OKGREEN}")
+            print("{:<20} {:<10} {:<10}".format("ESTUDANTE", "SIGLA", "NOTA"))
+            print(40 * '_'); print(f"{Cores.ENDC} ")
+    
+            for item in range(len(resultado)):
+                print("{:<20} {:<10} {:<10}".format(resultado[item][0], resultado[item][1], resultado[item][2]))
+        else:
+            print(f"{Cores.BOLD}{Cores.FAIL}Não foram encontrados registros.{Cores.ENDC}")
+
     except Exception as e:
         print(e)
 
 
 def queryPesquisarNotas():
 
-    #entre notas 
-    print('ENTRE NOTAS')
-    i = input('Nota inicial')
-    f = input('Nota final')
+    #pesquisa e lista avaliações entre notas 
+    print(f'{Cores.BOLD}{Cores.OKBLUE}\n*** Preencha as informações ***\n{Cores.ENDC}')
+    i = input('Nota inicial: ')
+    f = input('Nota final: ')
 
     try:
         cursor.execute(
@@ -478,14 +536,26 @@ def queryPesquisarNotas():
             ON AA.idAvaliacao = A.idAvaliacao
             WHERE U.siglaUsuario = 'ESTD' and AA.notaAtribuida >={i} and AA.notaAtribuida <= {f};
         """)
+
         resultado = cursor.fetchall()
-        print(resultado)
+
+        if resultado:
+            print(f"{Cores.BOLD}{Cores.OKGREEN}")
+            print("{:<20} {:<10} {:<10}".format("ESTUDANTE", "SIGLA", "NOTA"))
+            print(40 * '_'); print(f"{Cores.ENDC} ")
+    
+            for item in range(len(resultado)):
+                print("{:<20} {:<10} {:<10}".format(resultado[item][0], resultado[item][1], resultado[item][2]))
+        else:
+            print(f"{Cores.BOLD}{Cores.FAIL}Não foram encontrados registros.{Cores.ENDC}")
+
     except Exception as e:
         print(e)
 
 
 def search():
 
+    #Ppesquisa algum registro de acordo com o dado do campo informado
     print(f'{Cores.BOLD}{Cores.OKBLUE}\n*** Preencha as informações ***\n{Cores.ENDC}')
     
     tabela   = input('TABELA: ')
@@ -497,13 +567,21 @@ def search():
             f"SELECT * FROM {tabela} WHERE {campo} like '%{registro}%'"
         )
         resultado = cursor.fetchall()
-        print(resultado)
+        print('\n')
+
+        if resultado:
+            for item in range(len(resultado)):
+                print(resultado[item])
+        else:
+            print(f"{Cores.BOLD}{Cores.FAIL}Não foram encontrados registros.{Cores.ENDC}")
+
     except Exception as e:
         print(e)
 
 
 def boletim():
 
+    #lista todas as avaliações e notas correspondentes ao nome do estudante informado 
     estudante = input('\nInforme seu nome: ')
 
     try:
@@ -537,12 +615,4 @@ functions = locals()
 
 createDb('avaliacao.db')
 connect()
-'''table()
-insertTipoUsuario()
-insertUsuario()
-insertTipoAvaliacao()
-insertAvaliacao()
-insertAvaliacaoAluno()
-querySituacaoAlunos()'''
-#insertUsuario()
-#delete('usuario')
+table()

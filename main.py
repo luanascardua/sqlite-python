@@ -2,18 +2,6 @@ from sqlite import *
 from sheet import *
 from menu import *
 
-#print(f'Funções: {functions}')
-'''funcao = 'getData'
-functions[funcao]()'''
-
-'''function = 'insertUsuario'
-functions[function]()'''
-            
-'''raise ValueError('Opção inválida')
-break
-except ValueError as e:
-print(e)'''
-        
 
 if __name__ == '__main__':
 
@@ -28,11 +16,14 @@ if __name__ == '__main__':
             while returnMenuEstudante != 0:
                 if returnMenuEstudante == 1:
                     clean(); boletim()
-                    input(f"{Cores.BOLD}{Cores.OKBLUE}\nPressione <ENTER> para voltar ao menu principal ...{Cores.ENDC}")
+                    input(f"{Cores.BOLD}{Cores.OKBLUE}\nPressione <ENTER> para voltar ao menu principal ...")
+                    print(f'Voltando ao menu principal em 3s...{Cores.ENDC}')
+                    time.sleep(3)
                     break
             clean()
             opcao = menu()
 
+        #Menu professor
         elif opcao == 2:
             clean()
             opcaosub = menuProfessor()
@@ -54,6 +45,7 @@ if __name__ == '__main__':
                     function = 'query'
                     returnMenuPesquisar = submenuPesquisar()
 
+                
                     while returnMenuPesquisar != 0:
                         if returnMenuPesquisar == 1:
                             pesquisa = 'AvaliacaoPeriodo'
@@ -72,15 +64,20 @@ if __name__ == '__main__':
                         elif returnMenuPesquisar == 8:
                             print('Pesquisar por item')
                             search()
-                            input(f"{Cores.BOLD}{Cores.OKBLUE}\nPressione <ENTER> para voltar ao menu principal ...{Cores.ENDC}")
+                            input(f"{Cores.BOLD}{Cores.OKBLUE}\nPressione <ENTER> para voltar ao menu principal ...")
+                            print(f'Voltando ao menu principal em 3s...{Cores.ENDC}')
+                            time.sleep(3)
                             break
-        
                         functions[function + pesquisa]()
-                        input(f"{Cores.BOLD}{Cores.OKBLUE}\nPressione <ENTER> para voltar ao menu principal ...{Cores.ENDC}")
+                        input(f"{Cores.BOLD}{Cores.OKBLUE}\nPressione <ENTER> para voltar ao menu principal ...")
+                        print(f'Voltando ao menu principal em 3s...{Cores.ENDC}')
+                        time.sleep(3)
+
+                        clean()
                         break
                     clean()
-                    opcao = menu()
-                    #continue
+                    break
+
                 else:
                     print('Opção inválida!')
 
@@ -115,8 +112,10 @@ if __name__ == '__main__':
                     elif function == 'Delete':
                         delete(tabela)
 
-                    print(f'Voltando ao menu principal em 5s...{Cores.ENDC}')
-                    time.sleep(5)
+
+                    input(f"{Cores.BOLD}{Cores.OKBLUE}\n\nPressione <ENTER> para voltar ao menu principal ...")
+                    print(f'Voltando ao menu principal em 3s...{Cores.ENDC}')
+                    time.sleep(3)
                     break
 
                 clean()

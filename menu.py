@@ -72,7 +72,7 @@ def submenuCrud():
 def submenuPesquisar():
 
     print(f"{Cores.BOLD}{Cores.OKBLUE}\n*** Selecione um item de pesquisa ***{Cores.ENDC}")
-    print(f"{Cores.BOLD}{Cores.FAIL}\n0. Retornar ao menu anterior{Cores.ENDC}")
+    print(f"{Cores.BOLD}{Cores.FAIL}\n0. Retornar ao menu principal{Cores.ENDC}")
     print(f"{Cores.BOLD}1. Avaliações por período")
     print(f"{Cores.BOLD}2. Avaliações por professor")
     print(f"{Cores.BOLD}3. Avaliações por tipo")
@@ -84,3 +84,4 @@ def submenuPesquisar():
 
     opcaoMenu = int(input('\nSelecione uma opção: '))
     return opcaoMenu
+    
