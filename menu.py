@@ -13,7 +13,6 @@ def menu():
 
         return opcaoMenu
 
-
 def menuEstudante():
 
     print(23 * '=')
@@ -25,7 +24,6 @@ def menuEstudante():
 
     return opcaoMenu
 
-
 def submenuPesquisaEstudante():
 
     print(f"{Cores.BOLD}{Cores.OKBLUE}\n** Selecione um item de pesquisa **{Cores.ENDC}")
@@ -34,10 +32,8 @@ def submenuPesquisaEstudante():
     print(f"{Cores.BOLD}2. Exibir alunos REPROVADOS")
     print(f"{Cores.BOLD}3. Pesquisar entre notas{Cores.ENDC}")
 
-
     opcaoMenu = int(input('\nSelecione uma opção: '))
     return opcaoMenu
-
 
 def menuProfessor():
 
@@ -54,7 +50,6 @@ def menuProfessor():
     opcaoMenu = int(input('\nSelecione uma opção: '))
     return opcaoMenu
 
-
 def submenuCrud():
     
         print(f"{Cores.BOLD}{Cores.OKBLUE}\n*** Selecione um item p/ manipulação de dados ***{Cores.ENDC}")
@@ -67,7 +62,6 @@ def submenuCrud():
 
         opcaoMenu = int(input('\nSelecione uma opção: '))
         return opcaoMenu
-
 
 def submenuPesquisar():
 
