@@ -1,17 +1,20 @@
-from sqlite import *
-from sheet import *
+import time
+
+from sheet import Sheet
 from menu import *
+from sqlite import *
 
 
 if __name__ == '__main__':
+    createDb('avaliacao.db')
+    connect()
+    table()
 
     opcao = menu()
 
     while opcao != 3:
-    
         if opcao == 1:
             clean()
-
             returnMenuEstudante = menuEstudante()
             while returnMenuEstudante != 0:
                 if returnMenuEstudante == 1:
@@ -22,13 +25,11 @@ if __name__ == '__main__':
                     break
             clean()
             opcao = menu()
-
         #Menu professor
         elif opcao == 2:
             clean()
             opcaosub = menuProfessor()
             clean()
-
             while opcaosub != 0:
                 if opcaosub == 1:
                     function = 'display'
@@ -45,7 +46,6 @@ if __name__ == '__main__':
                     function = 'query'
                     returnMenuPesquisar = submenuPesquisar()
 
-                
                     while returnMenuPesquisar != 0:
                         if returnMenuPesquisar == 1:
                             pesquisa = 'AvaliacaoPeriodo'
@@ -72,17 +72,14 @@ if __name__ == '__main__':
                         input(f"{Cores.BOLD}{Cores.OKBLUE}\nPressione <ENTER> para voltar ao menu principal ...")
                         print(f'Voltando ao menu principal em 3s...{Cores.ENDC}')
                         time.sleep(3)
-
                         clean()
                         break
                     clean()
                     break
-
                 else:
                     print('Opção inválida!')
 
                 returnMenuCrud = submenuCrud()
-
                 while returnMenuCrud != 0:                     
                     if returnMenuCrud   == 1:
                         #table tipoUsuario
@@ -102,26 +99,20 @@ if __name__ == '__main__':
                     else:
                         print('Opção inválida')
 
-
                     if function != 'Update' and function != 'Delete':
                         functions[function + tabela]()
-
                     elif function == 'Update':
                         update(tabela)
-                        
                     elif function == 'Delete':
                         delete(tabela)
-
 
                     input(f"{Cores.BOLD}{Cores.OKBLUE}\n\nPressione <ENTER> para voltar ao menu principal ...")
                     print(f'Voltando ao menu principal em 3s...{Cores.ENDC}')
                     time.sleep(3)
                     break
-
                 clean()
                 opcaosub = menuProfessor()
                 clean()
-
             opcao = menu()
             clean()
 else:
