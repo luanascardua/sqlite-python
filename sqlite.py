@@ -537,7 +537,3 @@ def boletim():
 
 global functions
 functions = locals()
-
-createDb('avaliacao.db')
-connect()
-table()
